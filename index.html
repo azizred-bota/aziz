@@ -8,17 +8,16 @@
     
     <style>
         :root {
-            --primary: #4FACFE; 
-            --secondary: #00F2FE; 
+            --primary: #4FACFE;
+            --secondary: #00F2FE;
             --glass-bg: rgba(255, 255, 255, 0.15);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --news-bar-bg: #000; 
             --input-bg: rgba(255, 255, 255, 0.9);
             --success: #2ecc71;
             --error: #e74c3c;
+            --dark-bg: #000;
         }
 
-        /* الإعدادات الأساسية والخطوط */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
         
         body {
@@ -30,88 +29,129 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 15px 15px 50px 15px;
+            padding: 15px 15px 60px 15px; /* مساحة للشريط السفلي */
             overflow-x: hidden;
             position: relative;
         }
 
-        /* أيقونات SVG مدمجة */
-        .svg-icon { width: 20px; height: 20px; fill: #666; transition: 0.3s; }
-        .input-group:focus-within .svg-icon { fill: var(--primary); }
+        /* === تحسينات الشريط الإخباري (الحل النهائي للفراغات) === */
+        .ticker-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--dark-bg);
+            padding: 10px 0;
+            overflow: hidden;
+            z-index: 100;
+            white-space: nowrap;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
+            border-top: 1px solid var(--secondary);
+        }
 
-        /* الكارت الزجاجي */
+        .ticker {
+            display: inline-block; 
+            /* هذا هو سر الحركة المتصلة */
+            animation: moveTicker 35s linear infinite; 
+        }
+
+        .ticker-item {
+            display: inline-block;
+            padding: 0 2rem;
+            font-size: 16px;
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .ticker-item span { color: var(--secondary); margin-left: 5px; }
+
+        /* الحركة من اليسار لليمين بشكل متصل */
+        @keyframes moveTicker {
+            0% { transform: translateX(-50%); } 
+            100% { transform: translateX(0); }
+        }
+
+        /* === تصميم الكرت والشاشات === */
         .card-wrapper {
-            position: relative; z-index: 1; width: 100%; max-width: 380px;
+            position: relative; width: 100%; max-width: 380px;
             background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             border-radius: 20px; border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            overflow: hidden; transition: height 0.3s ease; min-height: 550px;
-            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            overflow: hidden; min-height: 520px;
+            transition: height 0.3s ease;
         }
-        .screen { padding: 30px 25px; width: 100%; position: absolute; top: 0; left: 0; opacity: 0; transform: translateX(100%); transition: 0.4s; display: none; }
-        .screen.active { opacity: 1; transform: translateX(0); position: relative; display: block; }
+
+        .screen {
+            padding: 30px 25px; width: 100%; position: absolute; 
+            top: 0; left: 0; opacity: 0; visibility: hidden;
+            transform: scale(0.95); transition: 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
         
-        /* الهيدر */
+        .screen.active {
+            opacity: 1; visibility: visible; transform: scale(1);
+            position: relative; 
+        }
+
+        /* Header & Icons */
         .header { text-align: center; margin-bottom: 25px; color: #fff; }
-        .logo-icon svg { width: 50px; height: 50px; fill: var(--secondary); margin-bottom: 10px; }
-        .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .logo-icon svg { width: 60px; height: 60px; fill: var(--secondary); filter: drop-shadow(0 0 5px rgba(0,242,254,0.5)); margin-bottom: 10px; }
+        .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 5px; }
         .header p { font-size: 13px; opacity: 0.9; }
 
-        /* الحقول */
+        /* Inputs */
         .input-group { position: relative; margin-bottom: 20px; }
-        .input-icon-wrapper { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); z-index: 2; display: flex; }
+        .svg-icon { width: 20px; height: 20px; fill: #666; position: absolute; top: 50%; right: 15px; transform: translateY(-50%); z-index: 2; transition: 0.3s; }
+        .input-group:focus-within .svg-icon { fill: var(--primary); }
+        
         input, select {
-            width: 100%; padding: 14px 45px 14px 15px; border: none; border-radius: 30px; 
+            width: 100%; padding: 14px 45px 14px 15px; border: none; border-radius: 12px; 
             font-size: 15px; background: var(--input-bg); outline: none; transition: 0.3s;
+            border: 2px solid transparent;
         }
-        
-        /* الأزرار */
-        .btn-login {
-            width: 100%; padding: 14px; background: linear-gradient(90deg, var(--primary), var(--secondary)); 
-            border: none; border-radius: 30px; color: white; font-size: 18px; font-weight: bold; 
-            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
-        }
-        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 242, 254, 0.6); }
+        input:focus, select:focus { border-color: var(--secondary); background: #fff; }
 
+        /* Buttons */
+        .btn-login, .btn-logout {
+            width: 100%; padding: 14px; border: none; border-radius: 12px; color: white; 
+            font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-login { background: linear-gradient(90deg, var(--primary), var(--secondary)); box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4); }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6); }
+        .btn-logout { background: #e74c3c; margin-top: 20px; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4); }
+
+        /* Quick Links */
         .quick-links { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-mini { flex: 1; padding: 10px; border-radius: 15px; background: rgba(255,255,255,0.1); color: white; text-align: center; font-size: 13px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.3s; }
-        
-        .price-item { background: rgba(255,255,255,0.9); margin-bottom: 10px; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; color: #333; }
-        .btn-back { background: rgba(255,255,255,0.1); width: 100%; padding: 10px; text-align: center; color: white; border-radius: 30px; display: block; margin-top: 20px; cursor: pointer; text-decoration: none; }
-        
-        /* خيار التذكر */
-        .checkbox-container {
-            display: flex; align-items: center; color: white; font-size: 13px; margin-bottom: 15px;
-            text-align: right; justify-content: flex-end;
-        }
-        .checkbox-container input { width: auto; margin-right: 8px; margin-left: 0; }
-        
-        /* رسائل الحالة */
-        .status-message { 
-            padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 15px; font-size: 14px; display: none; 
-            font-weight: 600; 
-        }
+        .btn-mini { flex: 1; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.15); color: white; text-align: center; font-size: 13px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; }
+        .btn-mini:hover { background: rgba(255,255,255,0.25); }
 
-        /* شريط الأخبار المتحرك (Ticker) */
-        .news-ticker-wrapper {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--news-bar-bg); 
-            color: white; padding: 8px 0; z-index: 10; overflow: hidden; box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
-            white-space: nowrap;
+        /* Feedback Messages */
+        .message-box { 
+            padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 15px; font-size: 14px; 
+            font-weight: 600; display: none; animation: shake 0.4s ease-in-out;
         }
-        .news-ticker-content {
-            display: inline-block; 
-            padding-right: 100%; 
-            animation: ticker 45s linear infinite;
-        }
-        .news-ticker-item {
-            display: inline-block; margin-left: 50px; font-size: 15px; font-weight: 600; color: var(--secondary);
-        }
-        @keyframes ticker {
-            /* الحركة: من اليسار إلى اليمين */
-            0% { transform: translate(-100%, 0); }
-            100% { transform: translate(100%, 0); }
-        }
+        .error-msg { background: rgba(231, 76, 60, 0.2); color: #ff6b6b; border: 1px solid #e74c3c; }
+        
+        /* Success Screen Styles */
+        .success-icon-wrap { width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 50%; background: rgba(46, 204, 113, 0.2); display: flex; align-items: center; justify-content: center; }
+        .spin-loader { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        
+        /* Dashboard Info Styles */
+        .info-card { background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; color: white; margin-top: 15px; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { opacity: 0.8; font-size: 14px; }
+        .info-value { font-weight: bold; color: var(--secondary); }
+
+        /* Animations */
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        
+        /* تحسينات القوائم الفرعية */
+        .price-item { background: rgba(255,255,255,0.95); margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; color: #333; font-weight: bold; }
+        .btn-back { display: block; width: 100%; padding: 10px; text-align: center; color: white; background: rgba(255,255,255,0.1); border-radius: 30px; margin-top: 15px; cursor: pointer; text-decoration: none; }
+
     </style>
 </head>
 <body>
@@ -123,177 +163,224 @@
                 <div class="logo-icon">
                     <svg viewBox="0 0 24 24"><path d="M12 6c3.537 0 6.837 1.353 9.293 3.543l-1.414 1.414C17.48 9.027 14.82 8 12 8s-5.48 1.027-7.879 2.957l-1.414-1.414C5.163 7.353 8.463 6 12 6zm0 4c2.493 0 4.853.973 6.586 2.543l-1.414 1.414C15.82 12.927 13.987 12 12 12s-3.82.927-5.172 1.957l-1.414-1.414C7.147 10.973 9.507 10 12 10zm0 4c1.153 0 2.227.453 3.029 1.186l-3.029 3.029-3.029-3.029C9.773 14.453 10.847 14 12 14z"/></svg>
                 </div>
-                <h1>شبكة عزيز نت</h1>
-                <p>أهلاً بك، يرجى إدخال رقم الكرت واختيار السرعة</p>
+                <h1 id="greeting-text">شبكة عزيز نت</h1>
+                <p>سجل دخولك واستمتع بالسرعة القصوى 🚀</p>
             </div>
 
-            <form name="login-form" onsubmit="return handleLogin(event)"> 
-                
+            <form id="loginForm" onsubmit="return attemptLogin(event)">
                 <div class="input-group">
-                    <div class="input-icon-wrapper">
-                        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-                    </div>
-                    <input type="text" name="username" id="user-input" placeholder="اسم المستخدم / رقم الكرت" required autocomplete="off">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    <input type="text" id="username" placeholder="رقم الكرت (مثال: 7166)" autocomplete="off">
                 </div>
 
                 <div class="input-group">
-                    <div class="input-icon-wrapper">
-                        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                    </div>
-                    <select name="profile" id="speed-select" required>
-                        <option value="" disabled selected>اختر سرعة البث المناسبة:</option>
-                        <option value="unlimited-profile">🚀 سرعة مفتوحة (VIP)</option>
-                        <option value="2m-profile">🎮 2 ميجا (ألعاب وبث)</option>
-                        <option value="1m-profile">📺 1 ميجا (فيديو)</option>
-                        <option value="512k-profile">📱 512 كيلو (تصفح)</option>
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    <select id="profile">
+                        <option value="VIP">🚀 سرعة مفتوحة (VIP)</option>
+                        <option value="2M">🎮 2 ميجا (ألعاب)</option>
+                        <option value="1M">📺 1 ميجا (يوتيوب)</option>
                     </select>
                 </div>
 
-                <div class="checkbox-container">
-                    <input type="checkbox" id="remember-me">
-                    <label for="remember-me">حفظ رقم الكرت للدخول القادم</label>
-                </div>
-                
-                <div class="status-message" id="login-message"></div>
+                <div id="error-msg" class="message-box error-msg"></div>
 
                 <button type="submit" class="btn-login">
-                    تسجيل الدخول <span style="margin-right: 5px;">&#x27A4;</span>
+                    تسجيل الدخول <svg style="width:20px;fill:white" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
                 </button>
             </form>
 
             <div class="quick-links">
-                <a class="btn-mini" onclick="showScreen('prices-screen')">📋 الأسعار</a>
-                <a class="btn-mini" onclick="showScreen('locations-screen')">📍 مواقعنا</a>
+                <div class="btn-mini" onclick="switchScreen('prices-screen')">📋 الباقات</div>
+                <div class="btn-mini" onclick="switchScreen('locations-screen')">📍 الفروع</div>
             </div>
-
-            <a href="https://wa.me/967739367154" class="btn-back" style="background: #25D366; color: white;">
-                <span style="font-weight: bold;">تواصل معنا واتساب</span>
+            
+            <a href="https://wa.me/967739367154" class="btn-back" style="background: #25D366; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg style="width:20px;height:20px;fill:white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                واتساب
             </a>
         </div>
 
+        <div class="screen" id="success-screen" style="text-align: center; color: white; padding-top: 50px;">
+            <div class="success-icon-wrap">
+                <svg style="width: 50px; height: 50px; fill: #2ecc71;" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <h2 style="font-size: 24px; margin-bottom: 10px;">تم تسجيل الدخول!</h2>
+            <p style="opacity: 0.8;">مرحباً بك في عالم السرعة</p>
+            <div class="spin-loader"></div>
+            <p style="font-size: 12px; opacity: 0.6; margin-top: 20px;">جاري تحضير بياناتك...</p>
+        </div>
+
+        <div class="screen" id="status-screen">
+            <div class="header">
+                <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg></div>
+                <h1>حسابي</h1>
+                <p>أنت متصل الآن بالإنترنت ✅</p>
+            </div>
+
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">اسم المستخدم</span>
+                    <span class="info-value" id="display-user">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">الباقة الحالية</span>
+                    <span class="info-value" id="display-profile">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">حالة الاتصال</span>
+                    <span class="info-value" style="color: #2ecc71;">نشط الآن</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">جودة الاتصال (Ping)</span>
+                    <span class="info-value" id="fake-ping">15 ms</span>
+                </div>
+                <div class="info-row" style="border:none">
+                    <span class="info-label">وقت الجلسة</span>
+                    <span class="info-value" id="session-time">00:00</span>
+                </div>
+            </div>
+
+            <button onclick="handleLogout()" class="btn-logout">
+                تسجيل الخروج <svg style="width:20px;fill:white" viewBox="0 0 24 24"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+            </button>
+        </div>
+
         <div class="screen" id="prices-screen">
-            <h2 class="header">📋 قائمة الباقات</h2>
-            <div class="price-item"><span>باقة 3 ساعات</span> <strong>100 ريال</strong></div>
-            <div class="price-item"><span>باقة يوم كامل</span> <strong>300 ريال</strong></div>
-            <div class="price-item"><span>الباقة الشهرية</span> <strong>3000 ريال</strong></div>
-            <a class="btn-back" onclick="showScreen('login-screen')">رجوع للرئيسية</a>
+            <h2 class="header">📋 الباقات المتوفرة</h2>
+            <div class="price-item"><span>ساعتين</span> <span>100 ريال</span></div>
+            <div class="price-item"><span>يوم كامل</span> <span>300 ريال</span></div>
+            <div class="price-item"><span>أسبوع</span> <span>1000 ريال</span></div>
+            <div class="price-item"><span>شهر مفتوح</span> <span>3000 ريال</span></div>
+            <div class="btn-back" onclick="switchScreen('login-screen')">عودة للرئيسية</div>
         </div>
 
         <div class="screen" id="locations-screen">
-            <h2 class="header">📍 مواقعنا ونقاط البيع</h2>
-            <div class="price-item">
-                <div>
-                    <strong>بقالة الصامت</strong><br>
-                    <small style="color: #666;">منطقة صبر - قرب المسجد الكبير</small>
-                </div>
+            <h2 class="header">📍 نقاط البيع</h2>
+            <div class="price-item" style="display:block">
+                <div>بقالة الصامت</div>
+                <small style="color:#666; font-weight:normal">الشارع العام - جوار المسجد</small>
             </div>
-            <div class="price-item">
-                <div>
-                    <strong>سوبر ماركت الخير</strong><br>
-                    <small style="color: #666;">جولة المدينة - مقابل الصيدلية</small>
-                </div>
+            <div class="price-item" style="display:block">
+                <div>سوبر ماركت السلام</div>
+                <small style="color:#666; font-weight:normal">جولة المدينة</small>
             </div>
-            <a class="btn-back" onclick="showScreen('login-screen')">رجوع للرئيسية</a>
+            <div class="btn-back" onclick="switchScreen('login-screen')">عودة للرئيسية</div>
         </div>
 
     </div>
-    
-    <div class="news-ticker-wrapper">
-        <div class="news-ticker-content">
-            <span class="news-ticker-item">⭐ عرض خاص: اشترك 3 أيام واحصل على يوم مجاناً!</span>
-            <span class="news-ticker-item">🔥 لا تفوت باقة VIP بسرعة فائقة للمشاهدة والألعاب!</span>
-            <span class="news-ticker-item">📞 للاستفسارات والدعم الفني: اتصل بنا على 739367154</span>
-            
-            <span class="news-ticker-item">⭐ عرض خاص: اشترك 3 أيام واحصل على يوم مجاناً!</span>
-            <span class="news-ticker-item">🔥 لا تفوت باقة VIP بسرعة فائقة للمشاهدة والألعاب!</span>
-            <span class="news-ticker-item">📞 للاستفسارات والدعم الفني: اتصل بنا على 739367154</span>
 
-            <span class="news-ticker-item">⭐ عرض خاص: اشترك 3 أيام واحصل على يوم مجاناً!</span>
-            <span class="news-ticker-item">🔥 لا تفوت باقة VIP بسرعة فائقة للمشاهدة والألعاب!</span>
-            <span class="news-ticker-item">📞 للاستفسارات والدعم الفني: اتصل بنا على 739367154</span>
-
-            <span class="news-ticker-item">⭐ عرض خاص: اشترك 3 أيام واحصل على يوم مجاناً!</span>
-            <span class="news-ticker-item">🔥 لا تفوت باقة VIP بسرعة فائقة للمشاهدة والألعاب!</span>
-            <span class="news-ticker-item">📞 للاستفسارات والدعم الفني: اتصل بنا على 739367154</span>
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <div class="ticker-item"><span>⭐</span> عرض نهاية الأسبوع: اشترك يوم واحصل على 6 ساعات مجاناً!</div>
+            <div class="ticker-item"><span>🔥</span> باقة VIP الجديدة: سرعة تحميل خيالية للألعاب!</div>
+            <div class="ticker-item"><span>📞</span> للدعم الفني والاستفسار تواصل واتساب: 739367154</div>
             
-            <span class="news-ticker-item">⭐ عرض خاص: اشترك 3 أيام واحصل على يوم مجاناً!</span>
-            <span class="news-ticker-item">🔥 لا تفوت باقة VIP بسرعة فائقة للمشاهدة والألعاب!</span>
-            <span class="news-ticker-item">📞 للاستفسارات والدعم الفني: اتصل بنا على 739367154</span>
-            
-            <span class="news-ticker-item">⭐ عرض خاص: اشترك 3 أيام واحصل على يوم مجاناً!</span>
-            <span class="news-ticker-item">🔥 لا تفوت باقة VIP بسرعة فائقة للمشاهدة والألعاب!</span>
-            <span class="news-ticker-item">📞 للاستفسارات والدعم الفني: اتصل بنا على 739367154</span>
+            <div class="ticker-item"><span>⭐</span> عرض نهاية الأسبوع: اشترك يوم واحصل على 6 ساعات مجاناً!</div>
+            <div class="ticker-item"><span>🔥</span> باقة VIP الجديدة: سرعة تحميل خيالية للألعاب!</div>
+            <div class="ticker-item"><span>📞</span> للدعم الفني والاستفسار تواصل واتساب: 739367154</div>
         </div>
     </div>
 
-    <script type="text/javascript">
-        // 1. استرجاع الكرت المحفوظ عند التحميل
-        window.onload = function() {
-            const savedUser = localStorage.getItem('azizNetUser');
-            if(savedUser) {
-                document.getElementById('user-input').value = savedUser;
-                document.getElementById('remember-me').checked = true;
-            }
-        };
+    <script>
+        // === 1. التحية الديناميكية ===
+        const hour = new Date().getHours();
+        const greetingElement = document.getElementById('greeting-text');
+        if (hour < 12) greetingElement.innerText = "صباح الخير في عزيز نت ☀️";
+        else if (hour < 18) greetingElement.innerText = "مساء الخير في عزيز نت 🌤️";
+        else greetingElement.innerText = "أمسية سعيدة في عزيز نت 🌙";
 
-        // 2. وظيفة تسجيل الدخول التجريبية
-        function handleLogin(event) {
-            event.preventDefault(); 
+        // === 2. منطق تسجيل الدخول المقيد ===
+        // الكروت المسموح بها فقط
+        const ALLOWED_CARDS = ['7166', '0000'];
+
+        function attemptLogin(e) {
+            e.preventDefault();
             
-            const form = event.target;
-            const usernameInput = form.username.value.trim();
-            const rememberMe = document.getElementById('remember-me').checked;
-            const messageElement = document.getElementById('login-message');
-            const selectedProfileText = form.profile.options[form.profile.selectedIndex].text; 
+            const usernameInput = document.getElementById('username');
+            const user = usernameInput.value.trim();
+            const profile = document.getElementById('profile').options[document.getElementById('profile').selectedIndex].text;
+            const errorBox = document.getElementById('error-msg');
 
-            // إخفاء الرسالة السابقة
-            messageElement.style.display = 'none';
+            // إخفاء الخطأ السابق
+            errorBox.style.display = 'none';
 
-            // حفظ الكرت في الذاكرة المحلية إذا تم اختيار الخيار
-            if(rememberMe) {
-                localStorage.setItem('azizNetUser', usernameInput);
-            } else {
-                localStorage.removeItem('azizNetUser');
-            }
+            // التحقق من صحة الكرت
+            if (ALLOWED_CARDS.includes(user)) {
+                // >> 1. إخفاء الدخول وإظهار شاشة النجاح
+                switchScreen('success-screen');
 
-            // --- منطق تجريبي لمحاكاة النجاح/الفشل (يمكنك إزالته إذا ربطته بـ API) ---
-            
-            // نجاح الدخول (للتجربة، أي كرت يتم إدخاله يعتبر ناجح)
-            if (usernameInput.length > 3 && form.profile.value !== "") {
-                messageElement.innerHTML = `✅ تم الدخول بنجاح! السرعة المختارة: ${selectedProfileText}`;
-                messageElement.style.backgroundColor = 'rgba(46, 204, 113, 0.2)';
-                messageElement.style.color = 'var(--success)';
-                messageElement.style.display = 'block';
-
-                // محاكاة إعادة التوجيه
+                // >> 2. الانتظار 3 ثواني ثم الانتقال لشاشة الحالة
                 setTimeout(() => {
-                    // window.location.href = "https://your-status-page.com";
+                    // تحديث البيانات في شاشة الحالة
+                    document.getElementById('display-user').textContent = user;
+                    document.getElementById('display-profile').textContent = profile;
+                    
+                    // تشغيل عداد وهمي للجلسة
+                    startSessionTimer();
+                    
+                    // الانتقال النهائي
+                    switchScreen('status-screen');
                 }, 3000);
 
             } else {
-                // فشل الدخول
-                messageElement.innerHTML = '❌ خطأ: يرجى التأكد من إدخال رقم الكرت واختيار السرعة.';
-                messageElement.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
-                messageElement.style.color = 'var(--error)';
-                messageElement.style.display = 'block';
+                // >> حالة الخطأ
+                errorBox.textContent = "❌ خطأ: رقم الكرت غير صحيح، حاول مرة أخرى.";
+                errorBox.style.display = 'block';
+                usernameInput.value = ''; // مسح الحقل
+                usernameInput.focus();
             }
-            // ----------------------------------------------------------------------
-
             return false;
         }
 
-        // 3. وظيفة التبديل بين الشاشات
-        function showScreen(id) {
-            const currentActive = document.querySelector('.screen.active');
-            const targetScreen = document.getElementById(id);
-            
-            if (currentActive && targetScreen && currentActive !== targetScreen) {
-                currentActive.classList.remove('active');
-                setTimeout(() => {
-                    targetScreen.classList.add('active');
-                }, 300);
-            }
+        // === 3. وظيفة تسجيل الخروج ===
+        function handleLogout() {
+            // إيقاف العداد
+            stopSessionTimer();
+            // مسح الحقول
+            document.getElementById('username').value = '';
+            document.getElementById('error-msg').style.display = 'none';
+            // العودة
+            switchScreen('login-screen');
         }
+
+        // === 4. إدارة التنقل بين الشاشات ===
+        function switchScreen(targetId) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(s => s.classList.remove('active'));
+            
+            // تأخير بسيط للحركة الانسيابية
+            setTimeout(() => {
+                document.getElementById(targetId).classList.add('active');
+            }, 100);
+        }
+
+        // === 5. ميزات إضافية (عداد الجلسة + بينج وهمي) ===
+        let sessionInterval;
+        let seconds = 0;
+
+        function startSessionTimer() {
+            seconds = 0;
+            const timerDisplay = document.getElementById('session-time');
+            const pingDisplay = document.getElementById('fake-ping');
+            
+            sessionInterval = setInterval(() => {
+                seconds++;
+                // تنسيق الوقت MM:SS
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                timerDisplay.textContent = `${mins}:${secs}`;
+
+                // تغيير البينج عشوائياً ليبدو حقيقياً
+                if(seconds % 2 === 0) {
+                    pingDisplay.textContent = Math.floor(Math.random() * (40 - 10) + 10) + ' ms';
+                }
+            }, 1000);
+        }
+
+        function stopSessionTimer() {
+            clearInterval(sessionInterval);
+        }
+
     </script>
 </body>
 </html>
