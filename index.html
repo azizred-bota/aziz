@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تسجيل الدخول | شبكة عزيز نت</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     
@@ -29,49 +29,64 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 15px 15px 60px 15px; /* مساحة للشريط السفلي */
-            overflow-x: hidden;
+            padding: 15px 15px 60px 15px; /* مساحة بالأسفل للشريط */
+            overflow-x: hidden; /* منع التمرير الأفقي للصفحة */
             position: relative;
         }
 
-        /* === تحسينات الشريط الإخباري (الحل النهائي للفراغات) === */
+        /* ========================================= */
+        /* 🛠️ إصلاح الشريط الإخباري (الحل النهائي) */
+        /* ========================================= */
         .ticker-wrap {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
+            height: 45px; /* ارتفاع ثابت للشريط */
             background-color: var(--dark-bg);
-            padding: 10px 0;
-            overflow: hidden;
-            z-index: 100;
-            white-space: nowrap;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.3);
-            border-top: 1px solid var(--secondary);
+            border-top: 2px solid var(--secondary);
+            overflow: hidden; /* إخفاء أي شيء خارج الشريط */
+            z-index: 9999;
+            display: flex;
+            align-items: center;
         }
 
-        .ticker {
-            display: inline-block; 
-            /* هذا هو سر الحركة المتصلة */
-            animation: moveTicker 35s linear infinite; 
+        .ticker-content {
+            display: flex; /* وضع النصوص بجانب بعضها في سطر واحد */
+            white-space: nowrap; /* منع النص من النزول لسطر جديد */
+            /* مدة الحركة: 20 ثانية (يمكنك تقليل الرقم لزيادة السرعة)
+               إذا أردت أسرع اجعلها 15s
+            */
+            animation: scroll 20s linear infinite; 
         }
 
         .ticker-item {
-            display: inline-block;
-            padding: 0 2rem;
+            color: white;
             font-size: 16px;
-            color: #fff;
             font-weight: bold;
+            padding: 0 50px; /* مسافة بين كل خبر والآخر */
+            display: flex;
+            align-items: center;
+            flex-shrink: 0; /* مهم جداً: يمنع النص من الانكماش في الجوال */
         }
         
-        .ticker-item span { color: var(--secondary); margin-left: 5px; }
-
-        /* الحركة من اليسار لليمين بشكل متصل */
-        @keyframes moveTicker {
-            0% { transform: translateX(-50%); } 
-            100% { transform: translateX(0); }
+        .ticker-item span {
+            color: var(--secondary);
+            margin-left: 8px;
+            font-size: 18px;
         }
 
-        /* === تصميم الكرت والشاشات === */
+        /* حركة الشريط: يتحرك لليسار بنسبة 50% فقط لأننا كررنا المحتوى مرتين */
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } 
+            /* في العربية والـ RTL، القيمة السالبة تحرك لليسار، وهو الاتجاه الصحيح */
+        }
+
+
+        /* ========================================= */
+        /* تصميم الكرت وبقية العناصر */
+        /* ========================================= */
         .card-wrapper {
             position: relative; width: 100%; max-width: 380px;
             background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -79,6 +94,7 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             overflow: hidden; min-height: 520px;
             transition: height 0.3s ease;
+            margin-bottom: 20px;
         }
 
         .screen {
@@ -106,7 +122,7 @@
         input, select {
             width: 100%; padding: 14px 45px 14px 15px; border: none; border-radius: 12px; 
             font-size: 15px; background: var(--input-bg); outline: none; transition: 0.3s;
-            border: 2px solid transparent;
+            border: 2px solid transparent; color: #333;
         }
         input:focus, select:focus { border-color: var(--secondary); background: #fff; }
 
@@ -170,7 +186,7 @@
             <form id="loginForm" onsubmit="return attemptLogin(event)">
                 <div class="input-group">
                     <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-                    <input type="text" id="username" placeholder="رقم الكرت (مثال: 7166)" autocomplete="off">
+                    <input type="text" id="username" placeholder="رقم الكرت (مثال: 7166)" autocomplete="off" inputmode="numeric">
                 </div>
 
                 <div class="input-group">
@@ -270,7 +286,7 @@
     </div>
 
     <div class="ticker-wrap">
-        <div class="ticker">
+        <div class="ticker-content">
             <div class="ticker-item"><span>⭐</span> عرض نهاية الأسبوع: اشترك يوم واحصل على 6 ساعات مجاناً!</div>
             <div class="ticker-item"><span>🔥</span> باقة VIP الجديدة: سرعة تحميل خيالية للألعاب!</div>
             <div class="ticker-item"><span>📞</span> للدعم الفني والاستفسار تواصل واتساب: 739367154</div>
