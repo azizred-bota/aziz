@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول | شبكة عزيز نت</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary: #4FACFE;
-            --secondary: #00F2FE;
+            --primary: #4FACFE; /* أزرق فاتح */
+            --secondary: #00F2FE; /* سماوي */
             --glass-bg: rgba(255, 255, 255, 0.15);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --text-color: #fff;
+            --news-bar-bg: rgba(0, 0, 0, 0.4);
             --input-bg: rgba(255, 255, 255, 0.9);
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --success: #2ecc71;
+            --error: #e74c3c;
         }
 
+        /* الإعدادات الأساسية والخطوط */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
         
         body {
@@ -26,222 +27,122 @@
             animation: gradientBG 15s ease infinite;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            padding: 15px 15px 50px 15px; /* مساحة للشريط الأخباري */
             overflow-x: hidden;
             position: relative;
         }
 
-        /* فقاعات الخلفية */
-        .circles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 0; }
-        .circles li { position: absolute; display: block; list-style: none; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.2); animation: animate 25s linear infinite; bottom: -150px; border-radius: 50%; }
-        .circles li:nth-child(1){ left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
-        .circles li:nth-child(2){ left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
-        .circles li:nth-child(3){ left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
-        .circles li:nth-child(4){ left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
-        .circles li:nth-child(5){ left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        /* أيقونات SVG مدمجة */
+        .svg-icon { width: 20px; height: 20px; fill: #666; transition: 0.3s; }
+        .input-group:focus-within .svg-icon { fill: var(--primary); }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        @keyframes animate {
-            0%{ transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
-            100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
-        }
-
-        /* الكرت الزجاجي */
+        /* الكارت الزجاجي */
         .card-wrapper {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 380px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: height 0.3s ease;
-            min-height: 500px;
+            position: relative; z-index: 1; width: 100%; max-width: 380px;
+            background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px; border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            overflow: hidden; transition: height 0.3s ease; min-height: 550px;
+            margin-bottom: 20px;
         }
-
-        .screen {
-            padding: 30px 25px;
-            width: 100%;
-            position: absolute;
-            top: 0; left: 0;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            display: none; /* إخفاء لعدم التداخل */
-        }
+        .screen { padding: 30px 25px; width: 100%; position: absolute; top: 0; left: 0; opacity: 0; transform: translateX(100%); transition: 0.4s; display: none; }
+        .screen.active { opacity: 1; transform: translateX(0); position: relative; display: block; }
         
-        .screen.active {
-            opacity: 1;
-            transform: translateX(0);
-            position: relative;
-            display: block;
-        }
-
         /* الهيدر */
         .header { text-align: center; margin-bottom: 25px; color: #fff; }
-        .logo-icon { font-size: 50px; margin-bottom: 10px; color: var(--secondary); text-shadow: 0 0 10px rgba(0,242,254,0.5); }
+        .logo-icon svg { width: 50px; height: 50px; fill: var(--secondary); margin-bottom: 10px; }
         .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .header p { font-size: 13px; opacity: 0.9; font-weight: 300; }
+        .header p { font-size: 13px; opacity: 0.9; }
 
         /* الحقول */
         .input-group { position: relative; margin-bottom: 20px; }
-        .input-group i { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: #666; font-size: 16px; z-index: 2; transition: 0.3s; }
-        
+        .input-icon-wrapper { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); z-index: 2; display: flex; }
         input, select {
-            width: 100%;
-            padding: 14px 45px 14px 15px;
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            background: var(--input-bg);
-            color: #333;
-            outline: none;
-            transition: 0.3s;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            width: 100%; padding: 14px 45px 14px 15px; border: none; border-radius: 30px; 
+            font-size: 15px; background: var(--input-bg); outline: none; transition: 0.3s;
         }
         
-        input:focus, select:focus { transform: scale(1.02); background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .input-group:focus-within i { color: var(--primary); }
-
         /* الأزرار */
         .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 30px;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
-            transition: 0.3s;
-            margin-top: 10px;
+            width: 100%; padding: 14px; background: linear-gradient(90deg, var(--primary), var(--secondary)); 
+            border: none; border-radius: 30px; color: white; font-size: 18px; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
         }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 242, 254, 0.6); }
-        .btn-login:active { transform: scale(0.95); }
 
-        /* الروابط والأزرار الثانوية */
         .quick-links { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-mini {
-            flex: 1;
-            padding: 10px;
-            border-radius: 15px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            font-size: 13px;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-        .btn-mini:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
-
-        .whatsapp-btn {
-            display: block;
-            background: #25D366;
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 30px;
-            text-decoration: none;
-            margin-top: 20px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            transition: 0.3s;
-        }
-        .whatsapp-btn:hover { background: #20ba5a; transform: scale(1.02); }
-
-        /* رسائل الخطأ */
-        .error { color: #ff6b6b; font-size: 13px; text-align: center; margin-top: 10px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 10px; display: none; }
+        .btn-mini { flex: 1; padding: 10px; border-radius: 15px; background: rgba(255,255,255,0.1); color: white; text-align: center; font-size: 13px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: 0.3s; }
         
-        /* شاشة التحميل والنجاح */
-        .loader { width: 50px; height: 50px; border: 5px solid #fff; border-bottom-color: transparent; border-radius: 50%; margin: 20px auto; animation: rotate 1s linear infinite; }
-        @keyframes rotate { 100% { transform: rotate(360deg); } }
+        .price-item { background: rgba(255,255,255,0.9); margin-bottom: 10px; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; color: #333; }
+        .btn-back { background: rgba(255,255,255,0.1); width: 100%; padding: 10px; text-align: center; color: white; border-radius: 30px; display: block; margin-top: 20px; cursor: pointer; text-decoration: none; }
         
-        /* القوائم والجداول */
-        .price-item {
-            background: rgba(255,255,255,0.9);
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #333;
-            transition: 0.3s;
-        }
-        .price-item:hover { transform: translateX(-5px); border-right: 5px solid var(--primary); }
-        .price-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
-
-        .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 0; color: white; }
-        .info-row span:first-child { opacity: 0.7; }
-        .info-row span:last-child { font-weight: bold; color: var(--secondary); }
-
+        /* خيار التذكر */
         .checkbox-container {
-            display: flex;
-            align-items: center;
-            color: white;
-            font-size: 13px;
-            margin-bottom: 15px;
+            display: flex; align-items: center; color: white; font-size: 13px; margin-bottom: 15px;
+            text-align: right; justify-content: flex-end;
         }
-        .checkbox-container input { width: auto; margin-left: 8px; }
+        .checkbox-container input { width: auto; margin-right: 8px; margin-left: 0; }
+        
+        /* رسائل الحالة */
+        .status-message { 
+            padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 15px; font-size: 14px; display: none; 
+            font-weight: 600; 
+        }
 
-        /* تحسينات العودة */
-        .btn-back { background: rgba(255,255,255,0.1); width: 100%; display: block; padding: 10px; text-align: center; color: white; border-radius: 30px; text-decoration: none; margin-top: 20px; cursor: pointer; transition: 0.3s; }
-        .btn-back:hover { background: rgba(255,255,255,0.2); }
-        .text-red { color: #ff6b6b !important; border: 1px solid #ff6b6b; }
-
+        /* شريط الأخبار المتحرك (Ticker) */
+        .news-ticker-wrapper {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--news-bar-bg);
+            color: white; padding: 8px 0; z-index: 10; overflow: hidden; box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+        .news-ticker-content {
+            display: inline-block; padding-right: 100%; animation: ticker 25s linear infinite;
+        }
+        .news-ticker-item {
+            display: inline-block; margin-left: 50px; font-size: 15px; font-weight: 600; color: var(--secondary);
+        }
+        @keyframes ticker {
+            0% { transform: translate(100%, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     </style>
 </head>
 <body>
-
-    <ul class="circles">
-        <li></li><li></li><li></li><li></li><li></li>
-    </ul>
 
     <div class="card-wrapper">
         
         <div class="screen active" id="login-screen">
             <div class="header">
-                <div class="logo-icon"><i class="fas fa-wifi"></i></div>
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 6c3.537 0 6.837 1.353 9.293 3.543l-1.414 1.414C17.48 9.027 14.82 8 12 8s-5.48 1.027-7.879 2.957l-1.414-1.414C5.163 7.353 8.463 6 12 6zm0 4c2.493 0 4.853.973 6.586 2.543l-1.414 1.414C15.82 12.927 13.987 12 12 12s-3.82.927-5.172 1.957l-1.414-1.414C7.147 10.973 9.507 10 12 10zm0 4c1.153 0 2.227.453 3.029 1.186l-3.029 3.029-3.029-3.029C9.773 14.453 10.847 14 12 14z"/></svg>
+                </div>
                 <h1>شبكة عزيز نت</h1>
-                <p>خدمة إنترنت سريع ومتميز</p>
+                <p>أهلاً بك، يرجى إدخال رقم الكرت واختيار السرعة</p>
             </div>
 
-            <form name="login" onsubmit="return handleLogin(event)"> 
-                <input type="hidden" name="dst" value="$(link-orig)" />
-                <input type="hidden" name="popup" value="true" />
+            <form name="login-form" onsubmit="return handleLogin(event)"> 
                 
                 <div class="input-group">
-                    <i class="fas fa-user-circle"></i>
-                    <input type="text" name="username" id="user-input" placeholder="رقم الكرت / المستخدم" required autocomplete="off">
+                    <div class="input-icon-wrapper">
+                        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    </div>
+                    <input type="text" name="username" id="user-input" placeholder="اسم المستخدم / رقم الكرت" required autocomplete="off">
                 </div>
-                <input type="hidden" name="password" value="temp_pass"> 
 
                 <div class="input-group">
-                    <i class="fas fa-tachometer-alt"></i>
+                    <div class="input-icon-wrapper">
+                        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    </div>
                     <select name="profile" id="speed-select" required>
-                        <option value="" disabled selected>اختر الباقة...</option>
-                        <option value="unlimited">🚀 سرعة مفتوحة (VIP)</option>
-                        <option value="2m">🎮 2 ميجا (ألعاب وبث)</option>
-                        <option value="1m">📺 1 ميجا (فيديو)</option>
-                        <option value="512k">📱 512 كيلو (تصفح)</option>
+                        <option value="" disabled selected>اختر سرعة البث المناسبة:</option>
+                        <option value="unlimited-profile">🚀 سرعة مفتوحة (VIP)</option>
+                        <option value="2m-profile">🎮 2 ميجا (ألعاب وبث)</option>
+                        <option value="1m-profile">📺 1 ميجا (فيديو)</option>
+                        <option value="512k-profile">📱 512 كيلو (تصفح)</option>
                     </select>
                 </div>
 
@@ -250,130 +151,57 @@
                     <label for="remember-me">حفظ رقم الكرت للدخول القادم</label>
                 </div>
                 
-                <div class="error" id="login-error"></div>
+                <div class="status-message" id="login-message"></div>
 
                 <button type="submit" class="btn-login">
-                    دخول الآن <i class="fas fa-arrow-left" style="margin-right: 5px;"></i>
+                    تسجيل الدخول <span style="margin-right: 5px;">&#x27A4;</span>
                 </button>
             </form>
 
             <div class="quick-links">
-                <a class="btn-mini" onclick="showScreen('prices-screen')">
-                    <i class="fas fa-tags"></i> الأسعار
-                </a>
-                <a class="btn-mini" onclick="showScreen('locations-screen')">
-                    <i class="fas fa-map-marker-alt"></i> نقاط البيع
-                </a>
+                <a class="btn-mini" onclick="showScreen('prices-screen')">📋 الأسعار</a>
+                <a class="btn-mini" onclick="showScreen('locations-screen')">📍 مواقعنا</a>
             </div>
 
-            <a href="https://wa.me/967739367154" class="whatsapp-btn" target="_blank">
-                <i class="fab fa-whatsapp"></i> تواصل معنا واتساب
+            <a href="https://wa.me/967739367154" class="btn-back" style="background: #25D366; color: white;">
+                <span style="font-weight: bold;">تواصل معنا واتساب</span>
             </a>
-        </div>
-        
-        <div class="screen" id="success-screen" style="text-align: center; color: white;">
-            <div style="font-size: 60px; color: #2ecc71; margin-bottom: 20px;">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2 style="margin-bottom: 10px;">تم الاتصال بنجاح!</h2>
-            <div class="loader"></div>
-            <p style="opacity: 0.8;">جاري تحويلك إلى معلومات حسابك...</p>
-        </div>
-
-        <div class="screen" id="status-screen">
-            <div class="header">
-                <div class="logo-icon" style="font-size: 40px;"><i class="fas fa-user-shield"></i></div>
-                <h1>بيانات الحساب</h1>
-            </div>
-            
-            <div style="background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px;">
-                <div class="info-row">
-                    <span><i class="fas fa-id-card"></i> المستخدم</span>
-                    <span id="status-username">...</span>
-                </div>
-                <div class="info-row">
-                    <span><i class="fas fa-tachometer-alt"></i> السرعة</span>
-                    <span id="status-profile">...</span>
-                </div>
-                <div class="info-row">
-                    <span><i class="fas fa-clock"></i> الوقت المتبقي</span>
-                    <span style="color: #2ecc71;">نشط</span>
-                </div>
-                <div class="info-row" style="border: none;">
-                    <span><i class="fas fa-signal"></i> الحالة</span>
-                    <span style="color: #2ecc71;">متصل <i class="fas fa-circle" style="font-size: 8px;"></i></span>
-                </div>
-            </div>
-            
-            <a onclick="showScreen('logout-confirm-screen')" class="btn-back text-red" style="margin-top: 25px;">
-                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-            </a>
-            <a class="btn-back" onclick="resetAndShowLogin()">الرئيسية</a>
-        </div>
-        
-        <div class="screen" id="logout-confirm-screen" style="text-align: center; color: white;">
-            <i class="fas fa-exclamation-triangle" style="font-size: 50px; color: #ff6b6b; margin-bottom: 20px;"></i>
-            <h3>هل تود قطع الاتصال؟</h3>
-            <p style="margin-bottom: 30px; opacity: 0.8;">سيتم ايقاف الانترنت عن جهازك</p>
-            
-            <button onclick="resetAndShowLogin()" class="btn-login" style="background: #ff6b6b; margin-bottom: 10px;">
-                نعم، تسجيل الخروج
-            </button>
-            <a class="btn-back" onclick="showScreen('status-screen')">إلغاء</a>
         </div>
 
         <div class="screen" id="prices-screen">
-            <h2 style="color: white; text-align: center; margin-bottom: 20px;">📋 قائمة الباقات</h2>
-            <div style="max-height: 350px; overflow-y: auto; padding-left: 5px;">
-                <div class="price-item">
-                    <div>
-                        <div style="font-weight: bold; font-size: 16px;">باقة أبو 100</div>
-                        <div style="font-size: 12px; color: #666;">3 ساعات متواصلة</div>
-                    </div>
-                    <div class="price-badge">100 ريال</div>
-                </div>
-                
-                <div class="price-item">
-                    <div>
-                        <div style="font-weight: bold; font-size: 16px;">باقة 15 ساعة</div>
-                        <div style="font-size: 12px; color: #666;">صالحة لمدة يومين</div>
-                    </div>
-                    <div class="price-badge">500 ريال</div>
-                </div>
-
-                <div class="price-item">
-                    <div>
-                        <div style="font-weight: bold; font-size: 16px;">الباقة الشهرية</div>
-                        <div style="font-size: 12px; color: #666;">سرعة عالية 30 يوم</div>
-                    </div>
-                    <div class="price-badge">3000 ريال</div>
-                </div>
-            </div>
-            <a class="btn-back" onclick="showScreen('login-screen')">رجوع</a>
+            <h2 class="header">📋 قائمة الباقات</h2>
+            <div class="price-item"><span>باقة 3 ساعات</span> <strong>100 ريال</strong></div>
+            <div class="price-item"><span>باقة يوم كامل</span> <strong>300 ريال</strong></div>
+            <div class="price-item"><span>الباقة الشهرية</span> <strong>3000 ريال</strong></div>
+            <a class="btn-back" onclick="showScreen('login-screen')">رجوع للرئيسية</a>
         </div>
 
         <div class="screen" id="locations-screen">
-            <h2 style="color: white; text-align: center; margin-bottom: 20px;">📍 أين تجد كروتنا؟</h2>
-            
+            <h2 class="header">📍 مواقعنا ونقاط البيع</h2>
             <div class="price-item">
-                <i class="fas fa-store" style="font-size: 20px; color: var(--primary);"></i>
-                <div style="flex:1; margin-right: 15px;">
-                    <strong>بقالة الصامت</strong>
-                    <div style="font-size: 12px; color: #666;">منطقة صبر</div>
+                <div>
+                    <strong>بقالة الصامت</strong><br>
+                    <small style="color: #666;">منطقة صبر - قرب المسجد الكبير</small>
                 </div>
             </div>
-
             <div class="price-item">
-                <i class="fas fa-store" style="font-size: 20px; color: var(--primary);"></i>
-                <div style="flex:1; margin-right: 15px;">
-                    <strong>بقالة الهدى</strong>
-                    <div style="font-size: 12px; color: #666;">جولة العقبة</div>
+                <div>
+                    <strong>سوبر ماركت الخير</strong><br>
+                    <small style="color: #666;">جولة المدينة - مقابل الصيدلية</small>
                 </div>
             </div>
-
-            <a class="btn-back" onclick="showScreen('login-screen')">رجوع</a>
+            <a class="btn-back" onclick="showScreen('login-screen')">رجوع للرئيسية</a>
         </div>
 
+    </div>
+    
+    <div class="news-ticker-wrapper">
+        <div class="news-ticker-content">
+            <span class="news-ticker-item">⭐ عرض خاص: اشترك 3 أيام واحصل على يوم مجاناً!</span>
+            <span class="news-ticker-item">🔥 لا تفوت باقة VIP بسرعة فائقة للمشاهدة والألعاب!</span>
+            <span class="news-ticker-item">📞 للاستفسارات والدعم الفني: اتصل بنا على 739367154</span>
+            <span class="news-ticker-item">⭐ عرض خاص: اشترك 3 أيام واحصل على يوم مجاناً!</span>
+        </div>
     </div>
 
     <script type="text/javascript">
@@ -386,23 +214,18 @@
             }
         };
 
-        function resetAndShowLogin() {
-            // لا نمسح الحقل إذا كان المستخدم قد اختار الحفظ
-            if(!document.getElementById('remember-me').checked) {
-                document.login.username.value = '';
-            }
-            document.getElementById('login-error').style.display = 'none';
-            showScreen('login-screen');
-        }
-
+        // 2. وظيفة تسجيل الدخول التجريبية
         function handleLogin(event) {
             event.preventDefault(); 
             
             const form = event.target;
             const usernameInput = form.username.value.trim();
             const rememberMe = document.getElementById('remember-me').checked;
-            const errorElement = document.getElementById('login-error');
-            const selectedProfile = form.profile.options[form.profile.selectedIndex].text; 
+            const messageElement = document.getElementById('login-message');
+            const selectedProfileText = form.profile.options[form.profile.selectedIndex].text; 
+
+            // إخفاء الرسالة السابقة
+            messageElement.style.display = 'none';
 
             // حفظ الكرت في الذاكرة المحلية إذا تم اختيار الخيار
             if(rememberMe) {
@@ -411,53 +234,45 @@
                 localStorage.removeItem('azizNetUser');
             }
 
-            errorElement.style.display = 'none';
+            // --- منطق تجريبي لمحاكاة النجاح/الفشل (يمكنك إزالته إذا ربطته بـ API) ---
+            
+            // نجاح الدخول (للتجربة، أي كرت يتم إدخاله يعتبر ناجح)
+            if (usernameInput.length > 3 && form.profile.value !== "") {
+                messageElement.innerHTML = `✅ تم الدخول بنجاح! السرعة المختارة: ${selectedProfileText}`;
+                messageElement.style.backgroundColor = 'rgba(46, 204, 113, 0.2)';
+                messageElement.style.color = 'var(--success)';
+                messageElement.style.display = 'block';
 
-            // محاكاة الدخول (للتجربة: الكرت الصحيح 7166)
-            // في الميكروتك الفعلي، هذا الكود سيقوم بإرسال البيانات للسيرفر
-            if (usernameInput === '7166') {
-                showScreen('success-screen'); 
-                
-                document.getElementById('status-username').textContent = usernameInput;
-                document.getElementById('status-profile').textContent = selectedProfile;
-
+                // محاكاة إعادة التوجيه
                 setTimeout(() => {
-                    showScreen('status-screen'); 
-                }, 2500); 
+                    // يمكنك هنا وضع كود إعادة توجيه حقيقي إلى صفحة أخرى
+                    // window.location.href = "https://your-status-page.com";
+                }, 3000);
+
             } else {
-                errorElement.innerHTML = '<i class="fas fa-times-circle"></i> رقم الكرت خطأ أو انتهت صلاحيته';
-                errorElement.style.display = 'block';
-                
-                // هز الشاشة عند الخطأ
-                const card = document.querySelector('.card-wrapper');
-                card.style.animation = 'shake 0.5s';
-                setTimeout(() => card.style.animation = '', 500);
+                // فشل الدخول
+                messageElement.innerHTML = '❌ خطأ: يرجى التأكد من إدخال رقم الكرت واختيار السرعة.';
+                messageElement.style.backgroundColor = 'rgba(231, 76, 60, 0.2)';
+                messageElement.style.color = 'var(--error)';
+                messageElement.style.display = 'block';
             }
+            // ----------------------------------------------------------------------
+
             return false;
         }
 
-        function showScreen(targetId) {
+        // 3. وظيفة التبديل بين الشاشات
+        function showScreen(id) {
             const currentActive = document.querySelector('.screen.active');
-            const targetScreen = document.getElementById(targetId);
+            const targetScreen = document.getElementById(id);
             
             if (currentActive && targetScreen && currentActive !== targetScreen) {
                 currentActive.classList.remove('active');
                 setTimeout(() => {
                     targetScreen.classList.add('active');
-                }, 300); // تأخير بسيط للحركة
+                }, 300);
             }
         }
     </script>
-    
-    <style>
-        /* أنيميشن الهز عند الخطأ */
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(5px); }
-            50% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-            100% { transform: translateX(0); }
-        }
-    </style>
 </body>
 </html>
