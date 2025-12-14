@@ -29,34 +29,32 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 15px 15px 60px 15px; /* مساحة بالأسفل للشريط */
-            overflow-x: hidden; /* منع التمرير الأفقي للصفحة */
+            padding: 15px 15px 60px 15px;
+            overflow-x: hidden;
             position: relative;
         }
 
         /* ========================================= */
-        /* 🛠️ إصلاح الشريط الإخباري (الحل النهائي) */
+        /* 🛠️ تعديل اتجاه الشريط (من اليسار لليمين) */
         /* ========================================= */
         .ticker-wrap {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 45px; /* ارتفاع ثابت للشريط */
+            height: 45px;
             background-color: var(--dark-bg);
             border-top: 2px solid var(--secondary);
-            overflow: hidden; /* إخفاء أي شيء خارج الشريط */
+            overflow: hidden;
             z-index: 9999;
             display: flex;
             align-items: center;
         }
 
         .ticker-content {
-            display: flex; /* وضع النصوص بجانب بعضها في سطر واحد */
-            white-space: nowrap; /* منع النص من النزول لسطر جديد */
-            /* مدة الحركة: 20 ثانية (يمكنك تقليل الرقم لزيادة السرعة)
-               إذا أردت أسرع اجعلها 15s
-            */
+            display: flex;
+            white-space: nowrap;
+            /* المدة الزمنية للحركة */
             animation: scroll 20s linear infinite; 
         }
 
@@ -64,10 +62,10 @@
             color: white;
             font-size: 16px;
             font-weight: bold;
-            padding: 0 50px; /* مسافة بين كل خبر والآخر */
+            padding: 0 50px;
             display: flex;
             align-items: center;
-            flex-shrink: 0; /* مهم جداً: يمنع النص من الانكماش في الجوال */
+            flex-shrink: 0;
         }
         
         .ticker-item span {
@@ -76,16 +74,17 @@
             font-size: 18px;
         }
 
-        /* حركة الشريط: يتحرك لليسار بنسبة 50% فقط لأننا كررنا المحتوى مرتين */
+        /* التعديل هنا:
+           جعلنا الحركة تبدأ من -50% وتذهب إلى 0%
+           هذا يجعل الشريط ينزلق نحو اليمين 
+        */
         @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } 
-            /* في العربية والـ RTL، القيمة السالبة تحرك لليسار، وهو الاتجاه الصحيح */
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); } 
         }
 
-
         /* ========================================= */
-        /* تصميم الكرت وبقية العناصر */
+        /* بقية التصميم */
         /* ========================================= */
         .card-wrapper {
             position: relative; width: 100%; max-width: 380px;
@@ -108,13 +107,11 @@
             position: relative; 
         }
 
-        /* Header & Icons */
         .header { text-align: center; margin-bottom: 25px; color: #fff; }
         .logo-icon svg { width: 60px; height: 60px; fill: var(--secondary); filter: drop-shadow(0 0 5px rgba(0,242,254,0.5)); margin-bottom: 10px; }
         .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 5px; }
         .header p { font-size: 13px; opacity: 0.9; }
 
-        /* Inputs */
         .input-group { position: relative; margin-bottom: 20px; }
         .svg-icon { width: 20px; height: 20px; fill: #666; position: absolute; top: 50%; right: 15px; transform: translateY(-50%); z-index: 2; transition: 0.3s; }
         .input-group:focus-within .svg-icon { fill: var(--primary); }
@@ -126,7 +123,6 @@
         }
         input:focus, select:focus { border-color: var(--secondary); background: #fff; }
 
-        /* Buttons */
         .btn-login, .btn-logout {
             width: 100%; padding: 14px; border: none; border-radius: 12px; color: white; 
             font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
@@ -136,35 +132,29 @@
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6); }
         .btn-logout { background: #e74c3c; margin-top: 20px; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4); }
 
-        /* Quick Links */
         .quick-links { display: flex; gap: 10px; margin-top: 20px; }
         .btn-mini { flex: 1; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.15); color: white; text-align: center; font-size: 13px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; }
         .btn-mini:hover { background: rgba(255,255,255,0.25); }
 
-        /* Feedback Messages */
         .message-box { 
             padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 15px; font-size: 14px; 
             font-weight: 600; display: none; animation: shake 0.4s ease-in-out;
         }
         .error-msg { background: rgba(231, 76, 60, 0.2); color: #ff6b6b; border: 1px solid #e74c3c; }
         
-        /* Success Screen Styles */
         .success-icon-wrap { width: 80px; height: 80px; margin: 0 auto 20px; border-radius: 50%; background: rgba(46, 204, 113, 0.2); display: flex; align-items: center; justify-content: center; }
         .spin-loader { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
         
-        /* Dashboard Info Styles */
         .info-card { background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; color: white; margin-top: 15px; }
         .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .info-row:last-child { border-bottom: none; }
         .info-label { opacity: 0.8; font-size: 14px; }
         .info-value { font-weight: bold; color: var(--secondary); }
 
-        /* Animations */
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         
-        /* تحسينات القوائم الفرعية */
         .price-item { background: rgba(255,255,255,0.95); margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; color: #333; font-weight: bold; }
         .btn-back { display: block; width: 100%; padding: 10px; text-align: center; color: white; background: rgba(255,255,255,0.1); border-radius: 30px; margin-top: 15px; cursor: pointer; text-decoration: none; }
 
@@ -298,15 +288,12 @@
     </div>
 
     <script>
-        // === 1. التحية الديناميكية ===
         const hour = new Date().getHours();
         const greetingElement = document.getElementById('greeting-text');
         if (hour < 12) greetingElement.innerText = "صباح الخير في عزيز نت ☀️";
         else if (hour < 18) greetingElement.innerText = "مساء الخير في عزيز نت 🌤️";
         else greetingElement.innerText = "أمسية سعيدة في عزيز نت 🌙";
 
-        // === 2. منطق تسجيل الدخول المقيد ===
-        // الكروت المسموح بها فقط
         const ALLOWED_CARDS = ['7166', '0000'];
 
         function attemptLogin(e) {
@@ -317,60 +304,41 @@
             const profile = document.getElementById('profile').options[document.getElementById('profile').selectedIndex].text;
             const errorBox = document.getElementById('error-msg');
 
-            // إخفاء الخطأ السابق
             errorBox.style.display = 'none';
 
-            // التحقق من صحة الكرت
             if (ALLOWED_CARDS.includes(user)) {
-                // >> 1. إخفاء الدخول وإظهار شاشة النجاح
                 switchScreen('success-screen');
-
-                // >> 2. الانتظار 3 ثواني ثم الانتقال لشاشة الحالة
                 setTimeout(() => {
-                    // تحديث البيانات في شاشة الحالة
                     document.getElementById('display-user').textContent = user;
                     document.getElementById('display-profile').textContent = profile;
-                    
-                    // تشغيل عداد وهمي للجلسة
                     startSessionTimer();
-                    
-                    // الانتقال النهائي
                     switchScreen('status-screen');
                 }, 3000);
 
             } else {
-                // >> حالة الخطأ
                 errorBox.textContent = "❌ خطأ: رقم الكرت غير صحيح، حاول مرة أخرى.";
                 errorBox.style.display = 'block';
-                usernameInput.value = ''; // مسح الحقل
+                usernameInput.value = '';
                 usernameInput.focus();
             }
             return false;
         }
 
-        // === 3. وظيفة تسجيل الخروج ===
         function handleLogout() {
-            // إيقاف العداد
             stopSessionTimer();
-            // مسح الحقول
             document.getElementById('username').value = '';
             document.getElementById('error-msg').style.display = 'none';
-            // العودة
             switchScreen('login-screen');
         }
 
-        // === 4. إدارة التنقل بين الشاشات ===
         function switchScreen(targetId) {
             const screens = document.querySelectorAll('.screen');
             screens.forEach(s => s.classList.remove('active'));
-            
-            // تأخير بسيط للحركة الانسيابية
             setTimeout(() => {
                 document.getElementById(targetId).classList.add('active');
             }, 100);
         }
 
-        // === 5. ميزات إضافية (عداد الجلسة + بينج وهمي) ===
         let sessionInterval;
         let seconds = 0;
 
@@ -381,12 +349,10 @@
             
             sessionInterval = setInterval(() => {
                 seconds++;
-                // تنسيق الوقت MM:SS
                 const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
                 const secs = (seconds % 60).toString().padStart(2, '0');
                 timerDisplay.textContent = `${mins}:${secs}`;
 
-                // تغيير البينج عشوائياً ليبدو حقيقياً
                 if(seconds % 2 === 0) {
                     pingDisplay.textContent = Math.floor(Math.random() * (40 - 10) + 10) + ' ms';
                 }
@@ -396,7 +362,6 @@
         function stopSessionTimer() {
             clearInterval(sessionInterval);
         }
-
     </script>
 </body>
 </html>
